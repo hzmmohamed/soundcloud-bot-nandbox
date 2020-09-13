@@ -163,10 +163,10 @@ nCallBack.onReceive = async (incomingMsg) => {
   }
 };
 
-nCallBack.onReceiveObj = (obj) => {};
+nCallBack.onReceiveObj = (obj) => { };
 nCallBack.onClose = () => console.log("ONCLOSE");
 nCallBack.onError = () => console.log("ONERROR");
-nCallBack.onChatMenuCallBack = (chatMenuCallback) => {};
+nCallBack.onChatMenuCallBack = (chatMenuCallback) => { };
 nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
   const btnCallback = inlineMsgCallback.button_callback;
   if (btnCallback.startsWith("page")) {
@@ -198,7 +198,7 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
     const info = await scdl.getInfo(btnCallback, CLIENT_ID);
 
     jsonUtils
-      .readJsonFile("./dl/uploadedTracks.json")
+      .readJsonFile("./uploadedTracks.json")
       .then((uploadedTracks) => {
         const matchingTrack = uploadedTracks.ids.find(
           (track) => track.scId === info.id
@@ -269,16 +269,16 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
 nCallBack.onMessagAckCallback = (msgAck) => {
   tempMsg = msgAck;
 };
-nCallBack.onUserJoinedBot = (user) => {};
-nCallBack.onChatMember = (chatMember) => {};
-nCallBack.onChatAdministrators = (chatAdministrators) => {};
-nCallBack.userStartedBot = (user) => {};
-nCallBack.onMyProfile = (user) => {};
-nCallBack.onUserDetails = (user) => {};
-nCallBack.userStoppedBot = (user) => {};
-nCallBack.userLeftBot = (user) => {};
-nCallBack.permanentUrl = (permenantUrl) => {};
-nCallBack.onChatDetails = (chat) => {};
-nCallBack.onInlineSearh = (inlineSearch) => {};
+nCallBack.onUserJoinedBot = (user) => { };
+nCallBack.onChatMember = (chatMember) => { };
+nCallBack.onChatAdministrators = (chatAdministrators) => { };
+nCallBack.userStartedBot = (user) => { };
+nCallBack.onMyProfile = (user) => { };
+nCallBack.onUserDetails = (user) => { };
+nCallBack.userStoppedBot = (user) => { };
+nCallBack.userLeftBot = (user) => { };
+nCallBack.permanentUrl = (permenantUrl) => { };
+nCallBack.onChatDetails = (chat) => { };
+nCallBack.onInlineSearh = (inlineSearch) => { };
 
 client.connect(TOKEN, nCallBack);

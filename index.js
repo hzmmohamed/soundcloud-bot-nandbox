@@ -250,12 +250,12 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
                   api.send(JSON.stringify(audioMessage));
 
                   jsonUtils
-                    .readJsonFile("./dl/uploadedTracks.json")
+                    .readJsonFile("./uploadedTracks.json")
                     .then((uploadedTracks) => {
                       uploadedTracks.ids.push({ scId: info.id, fileId });
                       jsonUtils.writeJsonFile(
                         uploadedTracks,
-                        "./dl/uploadedTracks.json"
+                        "./uploadedTracks.json"
                       );
                     });
                   fs.unlinkSync(`./dl/${fileName}.mp3`);

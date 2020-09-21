@@ -19,6 +19,7 @@ exports.search = async (client_id, q, page) => {
       }
     );
     const res = data.collection
+      .filter(({ full_duration }) => full_duration < 600000)
       .slice(0, 5)
       .map(({ title, uri, id, user, full_duration, artwork_url }) => {
         return {
@@ -37,9 +38,9 @@ exports.search = async (client_id, q, page) => {
 };
 
 exports.download = (url, client_id, fileName) => {
-  scdl.getInfo(url, client_id).then(info => {
-    console.log(info)
-  })
+  scdl.getInfo(url, client_id).then((info) => {
+    console.log(info);
+  });
   console.log("Downloading from SoundCloud...");
   return scdl.download(url, client_id).then((stream) => {
     console.log("Downloaded from SoundCloud.");

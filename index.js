@@ -163,10 +163,10 @@ nCallBack.onReceive = async (incomingMsg) => {
   }
 };
 
-nCallBack.onReceiveObj = (obj) => { };
+nCallBack.onReceiveObj = (obj) => {};
 nCallBack.onClose = () => console.log("ONCLOSE");
 nCallBack.onError = () => console.log("ONERROR");
-nCallBack.onChatMenuCallBack = (chatMenuCallback) => { };
+nCallBack.onChatMenuCallBack = (chatMenuCallback) => {};
 nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
   const btnCallback = inlineMsgCallback.button_callback;
   if (btnCallback.startsWith("page")) {
@@ -197,88 +197,95 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
     const fileName = `${parseInt(Math.random(12) * 10000000000000)}`;
     const info = await scdl.getInfo(btnCallback, CLIENT_ID);
 
-    jsonUtils
-      .readJsonFile("./uploadedTracks.json")
-      .then((uploadedTracks) => {
-        const matchingTrack = uploadedTracks.ids.find(
-          (track) => track.scId === info.id
-        );
-        if (matchingTrack) {
-          const audioMessage = new AudioOutMessage();
-          audioMessage.audio = matchingTrack.fileId;
-          audioMessage.title = info.title;
-          audioMessage.performer = info.user.username;
-          audioMessage.chat_id = inlineMsgCallback.chat.id;
-          audioMessage.reference = Id();
-          audioMessage.echo = 0;
-          audioMessage.caption = "";
-          api.send(JSON.stringify(audioMessage));
-        } else {
-          api.sendText(inlineMsgCallback.chat.id, "📩 downloading...");
-          scdl.getInfo(btnCallback, CLIENT_ID).then((info) => {
-            console.log(info);
-          });
-          scdl.download(btnCallback, CLIENT_ID).then(async (stream) => {
-            stream
-              .pipe(fs.createWriteStream(`./dl/${fileName}.mp3`))
-              .on("finish", () => {
-                MediaTransfer.uploadFile(
-                  TOKEN,
-                  `./dl/${fileName}.mp3`,
-                  config.UploadServer
-                ).then((fileId) => {
-                  if (!fileId) {
-                    console.log("Upload Failed.");
-                  }
+    jsonUtils.readJsonFile("./uploadedTracks.json").then((uploadedTracks) => {
+      const matchingTrack = uploadedTracks.ids.find(
+        (track) => track.scId === info.id
+      );
+      if (matchingTrack) {
+        const audioMessage = new AudioOutMessage();
+        audioMessage.audio = matchingTrack.fileId;
+        audioMessage.title = info.title;
+        audioMessage.performer = info.user.username;
+        audioMessage.chat_id = inlineMsgCallback.chat.id;
+        audioMessage.reference = Id();
+        audioMessage.echo = 0;
+        audioMessage.caption = "";
+        api.send(JSON.stringify(audioMessage));
+      } else {
+        scdl
+          .getInfo(btnCallback, CLIENT_ID)
+          .then(({ full_duration, title }) => {
+            if (full_duration > 600000) {
+              console.log(full_duration);
+              api.sendText(
+                inlineMsgCallback.chat.id,
+                `${title} is larger than the supported size by the bot.`
+              );
+            } else {
+              api.sendText(inlineMsgCallback.chat.id, "📩 downloading...");
+              scdl.download(btnCallback, CLIENT_ID).then(async (stream) => {
+                stream
+                  .pipe(fs.createWriteStream(`./dl/${fileName}.mp3`))
+                  .on("finish", () => {
+                    MediaTransfer.uploadFile(
+                      TOKEN,
+                      `./dl/${fileName}.mp3`,
+                      config.UploadServer
+                    ).then((fileId) => {
+                      if (!fileId) {
+                        console.log("Upload Failed.");
+                      }
 
-                  // TODO: update or delete the 'downloading' message
-                  // const updateTempMsg = new UpdateOutMessage();
-                  // updateTempMsg.message_id = tempMsg.message_id;
-                  // updateTempMsg.reference = tempMsg.reference;
-                  // updateTempMsg.to_user_id = inlineMsgCallback.from.id;
-                  // updateTempMsg.chat_id = inlineMsgCallback.chat.id;
-                  // updateTempMsg.text = "✔️ downloaded.";
-                  // api.send(JSON.stringify(updateTempMsg));
+                      // TODO: update or delete the 'downloading' message
+                      // const updateTempMsg = new UpdateOutMessage();
+                      // updateTempMsg.message_id = tempMsg.message_id;
+                      // updateTempMsg.reference = tempMsg.reference;
+                      // updateTempMsg.to_user_id = inlineMsgCallback.from.id;
+                      // updateTempMsg.chat_id = inlineMsgCallback.chat.id;
+                      // updateTempMsg.text = "✔️ downloaded.";
+                      // api.send(JSON.stringify(updateTempMsg));
 
-                  const audioMessage = new AudioOutMessage();
-                  audioMessage.audio = fileId;
-                  audioMessage.title = info.title;
-                  audioMessage.performer = info.user.username;
-                  audioMessage.chat_id = inlineMsgCallback.chat.id;
-                  audioMessage.reference = Id();
-                  audioMessage.echo = 0;
-                  api.send(JSON.stringify(audioMessage));
+                      const audioMessage = new AudioOutMessage();
+                      audioMessage.audio = fileId;
+                      audioMessage.title = info.title;
+                      audioMessage.performer = info.user.username;
+                      audioMessage.chat_id = inlineMsgCallback.chat.id;
+                      audioMessage.reference = Id();
+                      audioMessage.echo = 0;
+                      api.send(JSON.stringify(audioMessage));
 
-                  jsonUtils
-                    .readJsonFile("./uploadedTracks.json")
-                    .then((uploadedTracks) => {
-                      uploadedTracks.ids.push({ scId: info.id, fileId });
-                      jsonUtils.writeJsonFile(
-                        uploadedTracks,
-                        "./uploadedTracks.json"
-                      );
+                      jsonUtils
+                        .readJsonFile("./uploadedTracks.json")
+                        .then((uploadedTracks) => {
+                          uploadedTracks.ids.push({ scId: info.id, fileId });
+                          jsonUtils.writeJsonFile(
+                            uploadedTracks,
+                            "./uploadedTracks.json"
+                          );
+                        });
+                      fs.unlinkSync(`./dl/${fileName}.mp3`);
                     });
-                  fs.unlinkSync(`./dl/${fileName}.mp3`);
-                });
+                  });
               });
+            }
           });
-        }
-      });
+      }
+    });
   }
 };
 nCallBack.onMessagAckCallback = (msgAck) => {
   tempMsg = msgAck;
 };
-nCallBack.onUserJoinedBot = (user) => { };
-nCallBack.onChatMember = (chatMember) => { };
-nCallBack.onChatAdministrators = (chatAdministrators) => { };
-nCallBack.userStartedBot = (user) => { };
-nCallBack.onMyProfile = (user) => { };
-nCallBack.onUserDetails = (user) => { };
-nCallBack.userStoppedBot = (user) => { };
-nCallBack.userLeftBot = (user) => { };
-nCallBack.permanentUrl = (permenantUrl) => { };
-nCallBack.onChatDetails = (chat) => { };
-nCallBack.onInlineSearh = (inlineSearch) => { };
+nCallBack.onUserJoinedBot = (user) => {};
+nCallBack.onChatMember = (chatMember) => {};
+nCallBack.onChatAdministrators = (chatAdministrators) => {};
+nCallBack.userStartedBot = (user) => {};
+nCallBack.onMyProfile = (user) => {};
+nCallBack.onUserDetails = (user) => {};
+nCallBack.userStoppedBot = (user) => {};
+nCallBack.userLeftBot = (user) => {};
+nCallBack.permanentUrl = (permenantUrl) => {};
+nCallBack.onChatDetails = (chat) => {};
+nCallBack.onInlineSearh = (inlineSearch) => {};
 
 client.connect(TOKEN, nCallBack);

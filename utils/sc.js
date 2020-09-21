@@ -19,7 +19,6 @@ exports.search = async (client_id, q, page) => {
       }
     );
     const res = data.collection
-      .filter(({ full_duration }) => full_duration < 600000)
       .slice(0, 5)
       .map(({ title, uri, id, user, full_duration, artwork_url }) => {
         return {

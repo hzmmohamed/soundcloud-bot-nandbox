@@ -11,8 +11,6 @@ const Menu = require("nandbox-bot-api/src/data/Menu");
 const OutMessage = require("nandbox-bot-api/src/outmessages/OutMessage");
 const MediaTransfer = require("nandbox-bot-api/src/util/MediaTransfer");
 const sc = require("./utils/sc");
-const { create, update } = require("lodash");
-const { default: Axios } = require("axios");
 const fs = require("fs");
 const AudioOutMessage = require("nandbox-bot-api/src/outmessages/AudioOutMessage");
 const scdl = require("soundcloud-downloader");
@@ -21,7 +19,6 @@ const TOKEN = "90091783959388392:0:8bf55Db6ANrFcyuouIfkKdXHLqhIJA";
 
 const jsonUtils = require("./utils/jsonUtils");
 const UpdateOutMessage = require("nandbox-bot-api/src/outmessages/UpdateOutMessage");
-const { IncomingMessage } = require("http");
 
 function msToTime(duration) {
   let milliseconds = parseInt((duration % 1000) / 100),
@@ -215,7 +212,7 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
         scdl
           .getInfo(btnCallback, CLIENT_ID)
           .then(({ full_duration, title }) => {
-            if (full_duration > 300000) {
+            if (full_duration > 4200000) {
               console.log(full_duration);
               api.sendText(
                 inlineMsgCallback.chat.id,

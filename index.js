@@ -127,7 +127,9 @@ const createResultsMessage = async (q, page) => {
     `🔎 "${q}"\n`,
     `📃 Page ${page}`,
     `\n─────────────── \n`,
-    textResults.join("\n\n")
+    textResults.join("\n\n"),
+    `\n─────────────── \n`,
+    `Press the buttons below to download the corresponding tracks.`
   );
 
   return { menus, menuRef, msgText };

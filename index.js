@@ -71,19 +71,16 @@ const createResultsMessage = async (q, page) => {
   const textResults = [];
   const trackButtons = [];
   scResults.forEach((r) => {
-    if(r.full_duration < 4200000) {
-
-      textResults.push(
-        [
-          `${i}: 🎵 ${r.title.replace(".", " ")}`,
-          `👤 ${r.accountName}     ⏲️ ${msToTime(r.full_duration)}`,
-        ].join("\n")
-      );
-      trackButtons.push(
-        createButton(`${i}`, `${r.uri}`, i, "#e65f1c", "white").toJsonObject()
-      );
-      i++;
-    }
+    textResults.push(
+      [
+        `${i}: 🎵 ${r.title.replace(".", " ")}`,
+        `👤 ${r.accountName}     ⏲️ ${msToTime(r.full_duration)}`,
+      ].join("\n")
+    );
+    trackButtons.push(
+      createButton(`${i}`, `${r.uri}`, i, "#e65f1c", "white").toJsonObject()
+    );
+    i++;
   });
 
   const pageButtons = [
@@ -130,9 +127,7 @@ const createResultsMessage = async (q, page) => {
     `🔎 "${q}"\n`,
     `📃 Page ${page}`,
     `\n─────────────── \n`,
-    textResults.join("\n\n"),
-    `\n─────────────── \n`,
-    `Press the buttons below to download the corresponding tracks.`
+    textResults.join("\n\n")
   );
 
   return { menus, menuRef, msgText };

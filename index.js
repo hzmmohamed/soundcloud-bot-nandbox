@@ -14,8 +14,8 @@ const sc = require("./utils/sc");
 const fs = require("fs");
 const AudioOutMessage = require("nandbox-bot-api/src/outmessages/AudioOutMessage");
 const scdl = require("soundcloud-downloader");
-const CLIENT_ID = "yBT1d8kK7at5QuM6ik9RFcvPvDTi4xyP";
-const TOKEN = "90091783959388392:0:8bf55Db6ANrFcyuouIfkKdXHLqhIJA";
+const CLIENT_ID = "0gk6cWFxRJcIGpDjYPiqm0zXGM6O6cLx";
+const TOKEN = "90091783959388392:0:YmBSQhUzk0I5NB2Wrud8hYiUzuWuR6";
 
 const jsonUtils = require("./utils/jsonUtils");
 const UpdateOutMessage = require("nandbox-bot-api/src/outmessages/UpdateOutMessage");

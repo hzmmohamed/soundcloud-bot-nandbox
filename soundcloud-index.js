@@ -215,7 +215,7 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
         scdl
           .getInfo(btnCallback, CLIENT_ID)
           .then(({ full_duration, title }) => {
-            if (full_duration > 4200000) {
+            if (full_duration > 5400000) {
               console.log(full_duration);
               api.sendText(
                 inlineMsgCallback.chat.id,

@@ -15,7 +15,8 @@ const fs = require("fs");
 const AudioOutMessage = require("nandbox-bot-api/src/outmessages/AudioOutMessage");
 const scdl = require("soundcloud-downloader");
 const CLIENT_ID = "0gk6cWFxRJcIGpDjYPiqm0zXGM6O6cLx";
-const TOKEN = "90091783959388392:0:YmBSQhUzk0I5NB2Wrud8hYiUzuWuR6";
+const configFile = require('./config.json')
+const TOKEN = configFile.token;
 
 const jsonUtils = require("./utils/jsonUtils");
 const UpdateOutMessage = require("nandbox-bot-api/src/outmessages/UpdateOutMessage");
@@ -59,9 +60,9 @@ const createButton = (
   return btn;
 };
 const config = {
-  URI: "wss://d1.nandbox.net:5020/nandbox/api/",
-  DownloadServer: "https://d1.nandbox.net:5020/nandbox/download/",
-  UploadServer: "https://d1.nandbox.net:5020/nandbox/upload/",
+  URI: configFile.URI,
+  DownloadServer: configFile.DownloadServer,
+  UploadServer: configFile.UploadServer,
 };
 const client = nbClient.NandBoxClient.get(config);
 

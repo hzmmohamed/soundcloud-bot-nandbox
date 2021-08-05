@@ -14,7 +14,7 @@ const sc = require("./utils/sc");
 const fs = require("fs");
 const AudioOutMessage = require("nandbox-bot-api/src/outmessages/AudioOutMessage");
 const scdl = require("soundcloud-downloader");
-const CLIENT_ID = "0gk6cWFxRJcIGpDjYPiqm0zXGM6O6cLx";
+const CLIENT_ID = "atcX6KFaz2y3iq7fJayIK779Hr4oGArb";
 const configFile = require('./config.json')
 const TOKEN = configFile.token;
 

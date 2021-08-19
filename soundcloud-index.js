@@ -156,18 +156,16 @@ nCallBack.onReceive = async (incomingMsg) => {
     const q = incomingMsg.text;
     createResultsMessage(q, 1).then((data) => {
       let msg = new TextOutMessage();
+      
       msg.chat_id = chat_id;
       msg.reference = Id();
       msg.web_page_preview = OutMessage.WEB_PREVIEW_INSTANCE_VIEW;
       msg.echo = 1;
       msg.to_user_id = incomingMsg.from.id;
-      if(data.msgText == "No Results Found" && data.menus == [] && data.menuRef == []){
-        msg.text = data.msgText;
-      }else{
-        msg.menu_ref = data.menuRef;
-        msg.inline_menu = data.menus;
-        msg.text = data.msgText;
-      }
+      msg.menu_ref = data.menuRef;
+      msg.inline_menu = data.menus;
+      msg.text = data.msgText;
+      
       api.send(JSON.stringify(msg));
     });
   }

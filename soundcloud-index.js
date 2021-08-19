@@ -87,7 +87,9 @@ const createResultsMessage = async (q, page) => {
     });
   
   }else{
-    textResults = ["No Results Found"];
+    const emptyList = []
+    const noResultsMsg = "No Results Found"
+    return { emptyList, emptyList,  noResultsMsg};
   }
   
   const pageButtons = [

@@ -71,19 +71,25 @@ const createResultsMessage = async (q, page) => {
   let i = 1;
   const textResults = [];
   const trackButtons = [];
-  scResults.forEach((r) => {
-    textResults.push(
-      [
-        `${i}: 🎵 ${r.title.replace(".", " ")}`,
-        `👤 ${r.accountName}     ⏲️ ${msToTime(r.full_duration)}`,
-      ].join("\n")
-    );
-    trackButtons.push(
-      createButton(`${i}`, `${r.uri}`, i, "#e65f1c", "white").toJsonObject()
-    );
-    i++;
-  });
 
+  if(scResults.length > 0){
+    scResults.forEach((r) => {
+      textResults.push(
+        [
+          `${i}: 🎵 ${r.title.replace(".", " ")}`,
+          `👤 ${r.accountName}     ⏲️ ${msToTime(r.full_duration)}`,
+        ].join("\n")
+      );
+      trackButtons.push(
+        createButton(`${i}`, `${r.uri}`, i, "#e65f1c", "white").toJsonObject()
+      );
+      i++;
+    });
+  
+  }else{
+    textResults = ["No Results Found"];
+  }
+  
   const pageButtons = [
     createButton(
       "<<",

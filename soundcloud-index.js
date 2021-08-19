@@ -87,7 +87,7 @@ const createResultsMessage = async (q, page) => {
     });
   
   }else{
-    return { menus : [], menuRef : [],  noResultsMsg : "No Results Found"};
+    return false;
   }
   
   const pageButtons = [
@@ -156,16 +156,26 @@ nCallBack.onReceive = async (incomingMsg) => {
     const q = incomingMsg.text;
     createResultsMessage(q, 1).then((data) => {
       let msg = new TextOutMessage();
-      
+
       msg.chat_id = chat_id;
       msg.reference = Id();
       msg.web_page_preview = OutMessage.WEB_PREVIEW_INSTANCE_VIEW;
       msg.echo = 1;
       msg.to_user_id = incomingMsg.from.id;
-      msg.menu_ref = data.menuRef;
-      msg.inline_menu = data.menus;
-      msg.text = data.msgText;
+
+      if(data == false){
+
+        msg.menu_ref = []
+        msg.inline_menu = []
+        msg.text = "No Results Found";
+
+      }else{
+
+        msg.menu_ref = data.menuRef;
+        msg.inline_menu = data.menus;
+        msg.text = data.msgText;
       
+      }
       api.send(JSON.stringify(msg));
     });
   }

@@ -191,13 +191,6 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
     const pageNumber = parseInt(btnCallback.slice(4));
     if (pageNumber <= 0) return;
 
-    // const updateTempMsg = new UpdateOutMessage();
-    // updateTempMsg.message_id = inlineMsgCallback.message_id;
-    // updateTempMsg.reference = inlineMsgCallback.reference;
-    // updateTempMsg.to_user_id = inlineMsgCallback.from.id;
-    // updateTempMsg.chat_id = inlineMsgCallback.chat.id;
-    // updateTempMsg.text = "Fetching...";
-    // api.send(JSON.stringify(updateTempMsg));
     createResultsMessage(inlineMsgCallback.menu_ref, pageNumber)
       .then((data) => {
         const newPage = new UpdateOutMessage();
@@ -253,15 +246,6 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
                       if (!fileId) {
                         console.log("Upload Failed.");
                       }
-
-                      // TODO: update or delete the 'downloading' message
-                      // const updateTempMsg = new UpdateOutMessage();
-                      // updateTempMsg.message_id = tempMsg.message_id;
-                      // updateTempMsg.reference = tempMsg.reference;
-                      // updateTempMsg.to_user_id = inlineMsgCallback.from.id;
-                      // updateTempMsg.chat_id = inlineMsgCallback.chat.id;
-                      // updateTempMsg.text = "✔️ downloaded.";
-                      // api.send(JSON.stringify(updateTempMsg));
 
                       const audioMessage = new AudioOutMessage();
                       audioMessage.audio = fileId;

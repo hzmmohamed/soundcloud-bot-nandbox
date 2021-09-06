@@ -15,7 +15,7 @@ const fs = require("fs");
 const AudioOutMessage = require("nandbox-bot-api/src/outmessages/AudioOutMessage");
 const scdl = require("soundcloud-downloader");
 const CLIENT_ID = "atcX6KFaz2y3iq7fJayIK779Hr4oGArb";
-const configFile = require('./config.json')
+const configFile = require("./config.json");
 const TOKEN = configFile.token;
 
 const jsonUtils = require("./utils/jsonUtils");
@@ -72,7 +72,7 @@ const createResultsMessage = async (q, page) => {
   const textResults = [];
   const trackButtons = [];
 
-  if(scResults.length > 0){
+  if (scResults.length > 0) {
     scResults.forEach((r) => {
       textResults.push(
         [
@@ -85,11 +85,10 @@ const createResultsMessage = async (q, page) => {
       );
       i++;
     });
-  
-  }else{
+  } else {
     return false;
   }
-  
+
   const pageButtons = [
     createButton(
       "<<",
@@ -156,25 +155,21 @@ nCallBack.onReceive = async (incomingMsg) => {
     const q = incomingMsg.text;
     createResultsMessage(q, 1).then((data) => {
       let msg = new TextOutMessage();
-
+      console.log("Inside Receive");
       msg.chat_id = chat_id;
       msg.reference = Id();
       msg.web_page_preview = OutMessage.WEB_PREVIEW_INSTANCE_VIEW;
       msg.echo = 1;
       msg.to_user_id = incomingMsg.from.id;
 
-      if(data == false){
-
-        msg.menu_ref = []
-        msg.inline_menu = []
+      if (data == false) {
+        msg.menu_ref = [];
+        msg.inline_menu = [];
         msg.text = "No Results Found";
-
-      }else{
-
+      } else {
         msg.menu_ref = data.menuRef;
         msg.inline_menu = data.menus;
         msg.text = data.msgText;
-      
       }
       api.send(JSON.stringify(msg));
     });
@@ -187,6 +182,7 @@ nCallBack.onError = () => console.log("ONERROR");
 nCallBack.onChatMenuCallBack = (chatMenuCallback) => {};
 nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
   const btnCallback = inlineMsgCallback.button_callback;
+  console.log("Inside Inline Message Callback: " + btnCallback);
   if (btnCallback.startsWith("page")) {
     const pageNumber = parseInt(btnCallback.slice(4));
     if (pageNumber <= 0) return;
@@ -208,11 +204,15 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
     const fileName = `${parseInt(Math.random(12) * 10000000000000)}`;
     const info = await scdl.getInfo(btnCallback, CLIENT_ID);
 
+    // console.log(info);
+
     jsonUtils.readJsonFile("./uploadedTracks.json").then((uploadedTracks) => {
       const matchingTrack = uploadedTracks.ids.find(
         (track) => track.scId === info.id
       );
       if (matchingTrack) {
+        console.log("Matching Track: " + JSON.stringify(matchingTrack));
+        console.log("File Id: " + matchingTrack.fileId);
         const audioMessage = new AudioOutMessage();
         audioMessage.audio = matchingTrack.fileId;
         audioMessage.title = info.title;
@@ -227,7 +227,7 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
           .getInfo(btnCallback, CLIENT_ID)
           .then(({ full_duration, title }) => {
             if (full_duration > 9000000) {
-              console.log(full_duration);
+              console.log("Duration" + full_duration);
               api.sendText(
                 inlineMsgCallback.chat.id,
                 `${title} is larger than the supported size by the bot.`
@@ -235,6 +235,7 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
             } else {
               api.sendText(inlineMsgCallback.chat.id, "📩 downloading...");
               scdl.download(btnCallback, CLIENT_ID).then(async (stream) => {
+                console.log(btnCallback);
                 stream
                   .pipe(fs.createWriteStream(`./dl/${fileName}.mp3`))
                   .on("finish", () => {
@@ -247,6 +248,7 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
                         console.log("Upload Failed.");
                       }
 
+                      console.log("File Id: " + fileId);
                       const audioMessage = new AudioOutMessage();
                       audioMessage.audio = fileId;
                       audioMessage.title = info.title;

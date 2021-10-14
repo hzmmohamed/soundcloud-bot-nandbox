@@ -72,7 +72,7 @@ const createResultsMessage = async (q, page) => {
   const textResults = [];
   const trackButtons = [];
 
-  if(scResults.length > 0){
+  if(scResults && scResults.length > 0){
     scResults.forEach((r) => {
       textResults.push(
         [

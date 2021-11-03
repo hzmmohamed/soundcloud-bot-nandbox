@@ -141,6 +141,8 @@ const createResultsMessage = async (q, page) => {
   return { menus, menuRef, msgText };
 };
 
+const noResultsFound = "No Results Found";
+
 let tempMsgId = "";
 let api = null;
 nCallBack.onConnect = (_api) => {
@@ -153,7 +155,8 @@ nCallBack.onReceive = async (incomingMsg) => {
   if (
     incomingMsg.isTextMsg() &&
     incomingMsg.status !== "updated" &&
-    incomingMsg.status !== "deleted"
+    incomingMsg.status !== "deleted" &&
+    incomingMsg.text !== noResultsFound
   ) {
     const chat_id = incomingMsg.chat.id;
     const q = incomingMsg.text;
@@ -169,7 +172,7 @@ nCallBack.onReceive = async (incomingMsg) => {
       if (data == false) {
         msg.menu_ref = [];
         msg.inline_menu = [];
-        msg.text = "No Results Found";
+        msg.text = noResultsFound;
       } else {
         msg.menu_ref = data.menuRef;
         msg.inline_menu = data.menus;

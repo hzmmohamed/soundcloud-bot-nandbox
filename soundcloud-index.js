@@ -15,7 +15,7 @@ const fs = require("fs");
 const AudioOutMessage = require("nandbox-bot-api/src/outmessages/AudioOutMessage");
 const scdl = require("soundcloud-downloader");
 const CLIENT_ID = "atcX6KFaz2y3iq7fJayIK779Hr4oGArb";
-const configFile = require('./config.json')
+const configFile = require("./config.json");
 const TOKEN = configFile.token;
 
 const jsonUtils = require("./utils/jsonUtils");
@@ -72,7 +72,7 @@ const createResultsMessage = async (q, page) => {
   const textResults = [];
   const trackButtons = [];
 
-  if(scResults && scResults.length > 0){
+  if (scResults && scResults.length > 0) {
     scResults.forEach((r) => {
       textResults.push(
         [
@@ -85,11 +85,10 @@ const createResultsMessage = async (q, page) => {
       );
       i++;
     });
-  
-  }else{
+  } else {
     return false;
   }
-  
+
   const pageButtons = [
     createButton(
       "<<",
@@ -151,7 +150,11 @@ nCallBack.onConnect = (_api) => {
 
 nCallBack.onReceive = async (incomingMsg) => {
   console.log("Message Received");
-  if (incomingMsg.isTextMsg() && incomingMsg.status !== "updated") {
+  if (
+    incomingMsg.isTextMsg() &&
+    incomingMsg.status !== "updated" &&
+    incomingMsg.status !== "deleted"
+  ) {
     const chat_id = incomingMsg.chat.id;
     const q = incomingMsg.text;
     createResultsMessage(q, 1).then((data) => {
@@ -163,18 +166,14 @@ nCallBack.onReceive = async (incomingMsg) => {
       msg.echo = 1;
       msg.to_user_id = incomingMsg.from.id;
 
-      if(data == false){
-
-        msg.menu_ref = []
-        msg.inline_menu = []
+      if (data == false) {
+        msg.menu_ref = [];
+        msg.inline_menu = [];
         msg.text = "No Results Found";
-
-      }else{
-
+      } else {
         msg.menu_ref = data.menuRef;
         msg.inline_menu = data.menus;
         msg.text = data.msgText;
-      
       }
       api.send(JSON.stringify(msg));
     });

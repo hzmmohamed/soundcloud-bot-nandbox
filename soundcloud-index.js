@@ -14,7 +14,7 @@ const sc = require("./utils/sc");
 const fs = require("fs");
 const AudioOutMessage = require("nandbox-bot-api/src/outmessages/AudioOutMessage");
 const scdl = require("soundcloud-downloader");
-const CLIENT_ID = "atcX6KFaz2y3iq7fJayIK779Hr4oGArb";
+const CLIENT_ID = "FjnXkiGFvyaVIYtXadMm9pqIDawoxzUW";
 const configFile = require("./config.json");
 const TOKEN = configFile.token;
 
@@ -66,7 +66,11 @@ const config = {
 };
 const client = nbClient.NandBoxClient.get(config);
 
-const createResultsMessage = async (q, page) => {
+const botId = TOKEN.split(":", 1)[0];
+
+let shortName = "";
+
+const createResultsMessage = async (q, page, shortName) => {
   const scResults = await sc.search(CLIENT_ID, q, page);
   let i = 1;
   const textResults = [];
@@ -135,7 +139,9 @@ const createResultsMessage = async (q, page) => {
     `\n─────────────── \n`,
     textResults.join("\n\n"),
     `\n─────────────── \n`,
-    `Press the buttons below to download the corresponding tracks.`
+    `Press the buttons below to download the corresponding tracks.\n\nCreated by @` +
+      shortName +
+      ` bot`
   );
 
   return { menus, menuRef, msgText };
@@ -148,6 +154,7 @@ let api = null;
 nCallBack.onConnect = (_api) => {
   api = _api;
   console.log("Authenticated");
+  api.getUser(botId);
 };
 
 nCallBack.onReceive = async (incomingMsg) => {
@@ -160,7 +167,8 @@ nCallBack.onReceive = async (incomingMsg) => {
   ) {
     const chat_id = incomingMsg.chat.id;
     const q = incomingMsg.text;
-    createResultsMessage(q, 1).then((data) => {
+
+    createResultsMessage(q, 1, shortName).then((data) => {
       let msg = new TextOutMessage();
 
       msg.chat_id = chat_id;
@@ -193,7 +201,7 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
     const pageNumber = parseInt(btnCallback.slice(4));
     if (pageNumber <= 0) return;
 
-    createResultsMessage(inlineMsgCallback.menu_ref, pageNumber)
+    createResultsMessage(inlineMsgCallback.menu_ref, pageNumber, shortName)
       .then((data) => {
         const newPage = new UpdateOutMessage();
         newPage.message_id = inlineMsgCallback.message_id;
@@ -285,7 +293,10 @@ nCallBack.onChatMember = (chatMember) => {};
 nCallBack.onChatAdministrators = (chatAdministrators) => {};
 nCallBack.userStartedBot = (user) => {};
 nCallBack.onMyProfile = (user) => {};
-nCallBack.onUserDetails = (user) => {};
+nCallBack.onUserDetails = (user) => {
+  console.log("shortName " + user.shortName);
+  shortName = user.shortName;
+};
 nCallBack.userStoppedBot = (user) => {};
 nCallBack.userLeftBot = (user) => {};
 nCallBack.permanentUrl = (permenantUrl) => {};

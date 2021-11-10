@@ -139,9 +139,7 @@ const createResultsMessage = async (q, page, shortName) => {
     `\n─────────────── \n`,
     textResults.join("\n\n"),
     `\n─────────────── \n`,
-    `Press the buttons below to download the corresponding tracks.\n\nCreated by @` +
-      shortName +
-      ` bot`
+    `Press the buttons below to download the corresponding tracks.`
   );
 
   return { menus, menuRef, msgText };
@@ -230,7 +228,7 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
         audioMessage.chat_id = inlineMsgCallback.chat.id;
         audioMessage.reference = Id();
         audioMessage.echo = 0;
-        audioMessage.caption = "";
+        audioMessage.caption = "Created by @" + shortName + " bot";
         api.send(JSON.stringify(audioMessage));
       } else {
         scdl
@@ -264,6 +262,8 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
                       audioMessage.chat_id = inlineMsgCallback.chat.id;
                       audioMessage.reference = Id();
                       audioMessage.echo = 0;
+                      audioMessage.caption =
+                        "Created by @" + shortName + " bot";
                       api.send(JSON.stringify(audioMessage));
 
                       jsonUtils

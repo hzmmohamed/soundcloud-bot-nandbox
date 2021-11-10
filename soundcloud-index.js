@@ -228,7 +228,7 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
         audioMessage.chat_id = inlineMsgCallback.chat.id;
         audioMessage.reference = Id();
         audioMessage.echo = 0;
-        audioMessage.caption = "Created by @" + shortName + " bot";
+        audioMessage.caption = "Downloaded via @" + shortName + " bot";
         api.send(JSON.stringify(audioMessage));
       } else {
         scdl
@@ -263,7 +263,7 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
                       audioMessage.reference = Id();
                       audioMessage.echo = 0;
                       audioMessage.caption =
-                        "Created by @" + shortName + " bot";
+                        "Downloaded via @" + shortName + " bot";
                       api.send(JSON.stringify(audioMessage));
 
                       jsonUtils

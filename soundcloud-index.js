@@ -14,7 +14,7 @@ const sc = require("./utils/sc");
 const fs = require("fs");
 const AudioOutMessage = require("nandbox-bot-api/src/outmessages/AudioOutMessage");
 const scdl = require("soundcloud-downloader");
-const CLIENT_ID = "FjnXkiGFvyaVIYtXadMm9pqIDawoxzUW";
+const CLIENT_ID = "aruu5nVXiDILh6Dg7IlLpyhpjsnC2POa";
 const configFile = require("./config.json");
 const TOKEN = configFile.token;
 
@@ -161,7 +161,9 @@ nCallBack.onReceive = async (incomingMsg) => {
     incomingMsg.isTextMsg() &&
     incomingMsg.status !== "updated" &&
     incomingMsg.status !== "deleted" &&
-    incomingMsg.text !== noResultsFound
+    incomingMsg.text !== noResultsFound &&
+    (incomingMsg.chat_settings == 1 ||
+      incomingMsg.chat.id == incomingMsg.from.id)
   ) {
     const chat_id = incomingMsg.chat.id;
     const q = incomingMsg.text;
@@ -184,6 +186,10 @@ nCallBack.onReceive = async (incomingMsg) => {
         msg.inline_menu = data.menus;
         msg.text = data.msgText;
       }
+
+      if (incomingMsg.chat_settings == 1) msg.chat_settings = 1;
+      else msg.chat_settings = 0;
+
       api.send(JSON.stringify(msg));
     });
   }
@@ -194,6 +200,9 @@ nCallBack.onClose = () => console.log("ONCLOSE");
 nCallBack.onError = () => console.log("ONERROR");
 nCallBack.onChatMenuCallBack = (chatMenuCallback) => {};
 nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
+  let chatSettings = 0;
+  if (inlineMsgCallback.chat.id != inlineMsgCallback.from.id) chatSettings = 1;
+
   const btnCallback = inlineMsgCallback.button_callback;
   if (btnCallback.startsWith("page")) {
     const pageNumber = parseInt(btnCallback.slice(4));
@@ -209,6 +218,7 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
         newPage.chat_id = inlineMsgCallback.chat.id;
         newPage.inline_menu = data.menus;
         newPage.menu_ref = data.menuRef;
+        newPage.chat_settings = chatSettings;
         api.send(JSON.stringify(newPage));
       })
       .catch((err) => console.log(err.message));
@@ -229,6 +239,10 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
         audioMessage.reference = Id();
         audioMessage.echo = 0;
         audioMessage.caption = "Downloaded via @" + shortName + " bot";
+        if (chatSettings == 1) {
+          audioMessage.chat_settings = chatSettings;
+          audioMessage.to_user_id = inlineMsgCallback.from.id;
+        }
         api.send(JSON.stringify(audioMessage));
       } else {
         scdl
@@ -236,12 +250,42 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
           .then(({ full_duration, title }) => {
             if (full_duration > 9000000) {
               console.log(full_duration);
-              api.sendText(
-                inlineMsgCallback.chat.id,
-                `${title} is larger than the supported size by the bot.`
-              );
+
+              if (chatSettings == 0)
+                api.sendText(
+                  inlineMsgCallback.chat.id,
+                  `${title} is larger than the supported size by the bot.`
+                );
+              else {
+                let reference = Id();
+                api.sendText(
+                  inlineMsgCallback.chat.id,
+                  `${title} is larger than the supported size by the bot.`,
+                  reference,
+                  null,
+                  inlineMsgCallback.from.id,
+                  null,
+                  null,
+                  chatSettings,
+                  null
+                );
+              }
             } else {
-              api.sendText(inlineMsgCallback.chat.id, "📩 downloading...");
+              let reference = Id();
+              if (chatSettings == 0)
+                api.sendText(inlineMsgCallback.chat.id, "📩 downloading...");
+              else
+                api.sendText(
+                  inlineMsgCallback.chat.id,
+                  "📩 downloading...",
+                  reference,
+                  null,
+                  inlineMsgCallback.from.id,
+                  null,
+                  null,
+                  chatSettings,
+                  null
+                );
               scdl.download(btnCallback, CLIENT_ID).then(async (stream) => {
                 stream
                   .pipe(fs.createWriteStream(`./dl/${fileName}.mp3`))
@@ -264,6 +308,10 @@ nCallBack.onInlineMessageCallback = async (inlineMsgCallback) => {
                       audioMessage.echo = 0;
                       audioMessage.caption =
                         "Downloaded via @" + shortName + " bot";
+                      if (chatSettings == 1) {
+                        audioMessage.chat_settings = chatSettings;
+                        audioMessage.to_user_id = inlineMsgCallback.from.id;
+                      }
                       api.send(JSON.stringify(audioMessage));
 
                       jsonUtils

@@ -6,7 +6,7 @@
   "dependencies": {
     "axios": "^0.20.0",
     "lodash": "^4.17.20",
-    "nandbox-bot-api": "^1.2.23",
+    "nandbox-bot-api": "1.2.25",
     "soundcloud-downloader": "0.1.5",
     "soundcloud-search-node": "^1.0.2",
     "soundcloud-searcher": "^0.3.1",
